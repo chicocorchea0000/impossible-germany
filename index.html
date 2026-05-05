@@ -8,115 +8,12 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100%;}
-body{background:#fff;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
-canvas{display:block;background:#fff;}
-
-/* Header */
-#header{
-  position:fixed;top:0;left:0;right:0;
-  background:rgba(255,255,255,0.95);
-  border-bottom:1px solid #e0e0e0;
-  padding:12px 16px;
-  z-index:100;
-  box-shadow:0 2px 8px rgba(0,0,0,0.05);
-}
-#title{
-  font-size:18px;font-weight:600;color:#000;margin:0;
-}
-#subtitle{
-  font-size:12px;color:#666;margin:4px 0 0 0;
-}
-
-/* UI Panel */
-#ui{
-  position:fixed;top:56px;left:16px;
-  display:flex;flex-direction:column;gap:6px;
-  font-family:monospace;font-size:11px;color:#000;
-  background:rgba(255,255,255,0.92);
-  padding:12px;border:1px solid #ddd;
-  border-radius:6px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
-  max-height:calc(100vh - 100px);
-  overflow-y:auto;
-}
-.sl{display:flex;align-items:center;gap:8px;}
-.sl label{width:95px;text-align:right;opacity:0.7;font-weight:500;}
-.sl input[type=range]{width:100px;accent-color:#000;cursor:pointer;}
-.sl span{width:40px;opacity:0.85;text-align:left;font-weight:500;}
-#btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
-button{
-  font-family:monospace;font-size:11px;font-weight:500;
-  background:#000;color:#fff;
-  border:none;padding:6px 12px;cursor:pointer;
-  border-radius:4px;transition:all 0.2s;
-  flex:1;min-width:100px;
-}
-button:hover{background:#333;transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,0.2);}
-button:active{transform:translateY(0);box-shadow:0 1px 3px rgba(0,0,0,0.1);}
-
-/* Info Panel */
-#info{
-  position:fixed;bottom:16px;right:16px;
-  font-family:monospace;font-size:10px;
-  opacity:0.5;text-align:right;line-height:1.6;
-  background:rgba(255,255,255,0.9);
-  padding:8px 12px;
-  border:1px solid #ddd;
-  border-radius:4px;
-}
-
-/* Footer */
-#footer{
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(255,255,255,0.95);
-  border-top:1px solid #e0e0e0;
-  padding:8px 16px;
-  font-size:10px;
-  color:#888;
-  text-align:center;
-}
-
-/* Scrollbar personalizada */
-#ui::-webkit-scrollbar{width:6px;}
-#ui::-webkit-scrollbar-track{background:rgba(0,0,0,0.05);}
-#ui::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.2);border-radius:3px;}
-#ui::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,0.3);}
+body{background:#000;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
+canvas{display:block;background:#000;}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-
-<div id="header">
-  <h1 id="title">🐦 Murmuración</h1>
-  <p id="subtitle">Simulador de comportamiento colectivo basado en flocking</p>
-</div>
-
-<div id="ui">
-  <div class="sl"><label>población</label><input type="range" id="pop" min="200" max="4000" step="50" value="1800"><span id="popv">1800</span></div>
-  <div class="sl"><label>velocidad</label><input type="range" id="spd" min="1" max="7" step="0.1" value="3.5"><span id="spdv">3.5</span></div>
-  <div class="sl"><label>radio</label><input type="range" id="rad" min="20" max="160" step="5" value="70"><span id="radv">70</span></div>
-  <div class="sl"><label>separación</label><input type="range" id="sep" min="0.5" max="9" step="0.1" value="3.5"><span id="sepv">3.5</span></div>
-  <div class="sl"><label>cohesión</label><input type="range" id="coh" min="0" max="0.8" step="0.1" value="0.3"><span id="cohv">0.3</span></div>
-  <div class="sl"><label>alineación</label><input type="range" id="ali" min="0.1" max="5" step="0.1" value="1.2"><span id="aliv">1.2</span></div>
-  <div class="sl"><label>viento</label><input type="range" id="wind" min="0" max="0.08" step="0.002" value="0.015"><span id="windv">0.015</span></div>
-  <div class="sl"><label>tamaño cruz</label><input type="range" id="sz" min="0.5" max="5" step="0.1" value="1.5"><span id="szv">1.5</span></div>
-  <div id="btns">
-    <button id="btnSVG">📥 SVG</button>
-    <button id="btnPause">⏸ Pausa</button>
-    <button id="btnReset">🔄 Reset</button>
-  </div>
-</div>
-
-<div id="info">
-  <strong>Controles:</strong><br>
-  S · exportar SVG<br>
-  ESPACIO · pausa<br>
-  CLICK · perturbación
-</div>
-
-<div id="footer">
-  <a href="https://github.com/chicocorchea0000/impossible-germany" style="color:#666;text-decoration:none;">Murmuración · Simulador de Flocking</a>
-</div>
 
 <script>
 const canvas = document.getElementById('c');
@@ -131,28 +28,10 @@ resize();
 window.addEventListener('resize', resize);
 
 let cfg = {
-  pop:1800, spd:3.5, rad:70,
-  sepW:3.5, cohW:0.3, aliW:1.2,
-  wind:0.015, sz:1.5, force:0.12
+  pop:1500, spd:4, rad:100,
+  sepW:0.4, cohW:0, aliW:5,
+  wind:0, sz:1.5, force:0.12
 };
-
-function bindSlider(id, key, outId){
-  const el = document.getElementById(id);
-  const out = document.getElementById(outId);
-  el.addEventListener('input', ()=>{
-    cfg[key] = parseFloat(el.value);
-    out.textContent = el.value;
-    if(key==='pop') respawn();
-  });
-}
-bindSlider('pop','pop','popv');
-bindSlider('spd','spd','spdv');
-bindSlider('rad','rad','radv');
-bindSlider('sep','sepW','sepv');
-bindSlider('coh','cohW','cohv');
-bindSlider('ali','aliW','aliv');
-bindSlider('wind','wind','windv');
-bindSlider('sz','sz','szv');
 
 function angleDiff(a, b){
   let d = b - a;
@@ -169,13 +48,10 @@ class Boid {
     this.speed  = cfg.spd * (0.75 + Math.random() * 0.5);
     this.vx     = Math.cos(this.angle) * this.speed;
     this.vy     = Math.sin(this.angle) * this.speed;
-    // acumuladores suavizados (low-pass sobre fuerzas brutas)
     this.smoothFx = 0;
     this.smoothFy = 0;
-    // inercia rotacional
     this.angVel = 0;
     this.mass   = 0.85 + Math.random() * 0.3;
-    // fase individual para variación de velocidad
     this.phase  = Math.random() * Math.PI * 2;
   }
 
@@ -197,7 +73,6 @@ class Boid {
         const ddx = b.x - this.x, ddy = b.y - this.y;
         const d2  = ddx*ddx + ddy*ddy;
         if(d2 > r2 || d2 === 0) continue;
-        // peso por distancia: vecinos cercanos influyen más
         const w = 1 - Math.sqrt(d2)/r;
         alx += b.vx*w; aly += b.vy*w; an += w;
         cox += b.x*w;  coy += b.y*w;  cn += w;
@@ -229,7 +104,6 @@ class Boid {
       fy += (spy/m*spd - this.vy) * cfg.sepW;
     }
 
-    // LOW-PASS: la fuerza nueva entra sólo un % cada frame (~25 frames de latencia)
     const ease = 0.055 / this.mass;
     this.smoothFx += (fx - this.smoothFx) * ease;
     this.smoothFy += (fy - this.smoothFy) * ease;
@@ -238,7 +112,6 @@ class Boid {
   update(windX, windY){
     const spd = cfg.spd;
 
-    // ángulo deseado a partir de la fuerza suavizada + viento
     const totalFx = this.smoothFx + windX * 8;
     const totalFy = this.smoothFy + windY * 8;
     const fMag = Math.sqrt(totalFx*totalFx + totalFy*totalFy);
@@ -246,16 +119,14 @@ class Boid {
     if(fMag > 0.001){
       const desiredAngle = Math.atan2(totalFy, totalFx);
       const diff = angleDiff(this.angle, desiredAngle);
-      // máx ~2.2° por frame — la clave de la sinuosidad
       const maxTurn = 0.038;
       const torque  = Math.max(-maxTurn, Math.min(maxTurn, diff * 0.18));
       this.angVel  += torque;
-      this.angVel  *= 0.72; // damping rotacional
+      this.angVel  *= 0.72;
       this.angVel   = Math.max(-maxTurn, Math.min(maxTurn, this.angVel));
       this.angle   += this.angVel;
     }
 
-    // velocidad escalar con respiración orgánica por fase
     const targetSpd = spd * (0.82 + 0.18 * Math.sin(this.phase));
     this.speed += (targetSpd - this.speed) * 0.04;
     this.phase += 0.018;
@@ -265,7 +136,6 @@ class Boid {
     this.x += this.vx;
     this.y += this.vy;
 
-    // rebote de bordes como torque angular, no fuerza cartesiana
     const margin = 90;
     let borderFx = 0, borderFy = 0;
     if(this.x < margin){
@@ -292,17 +162,10 @@ class Boid {
     this.y = Math.max(-5, Math.min(H+5, this.y));
   }
 
-  draw(ctx, sz){
-    const r = sz * this.mass * 0.9;
-    ctx.moveTo(this.x-r, this.y); ctx.lineTo(this.x+r, this.y);
-    ctx.moveTo(this.x, this.y-r); ctx.lineTo(this.x, this.y+r);
-  }
-
-  svgLines(sz){
-    const r = sz * this.mass * 0.9;
-    const x = this.x.toFixed(2), y = this.y.toFixed(2);
-    return `<line x1="${(this.x-r).toFixed(2)}" y1="${y}" x2="${(this.x+r).toFixed(2)}" y2="${y}"/>`
-         + `<line x1="${x}" y1="${(this.y-r).toFixed(2)}" x2="${x}" y2="${(this.y+r).toFixed(2)}"/>`;
+  draw(ctx){
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+    ctx.fill();
   }
 }
 
@@ -325,47 +188,15 @@ function buildGrid(){
   return map;
 }
 
-function exportSVG(){
-  const sz = cfg.sz;
-  const lines = flock.map(b => b.svgLines(sz)).join('\n');
-  const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-<rect width="${W}" height="${H}" fill="white"/>
-<g stroke="black" stroke-width="0.5" stroke-linecap="round">
-${lines}
-</g>
-</svg>`;
-  const a = document.createElement('a');
-  a.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-  a.download = 'murmuracion_' + Date.now() + '.svg';
-  a.click();
-}
-
 let windAngle = Math.random() * Math.PI * 2;
 let perturb = null;
-let paused = false;
 
 canvas.addEventListener('click', e=>{
   perturb = {x: e.clientX, y: e.clientY};
 });
 
-document.getElementById('btnPause').addEventListener('click',()=>{
-  paused = !paused;
-  document.getElementById('btnPause').textContent = paused ? '▶ Reanudar' : '⏸ Pausa';
-});
-document.getElementById('btnReset').addEventListener('click',()=>{
-  flock = []; respawn();
-});
-document.getElementById('btnSVG').addEventListener('click', exportSVG);
-
-document.addEventListener('keydown', e=>{
-  if(e.code === 'Space'){ e.preventDefault(); paused = !paused; }
-  if(e.key === 's' || e.key === 'S') exportSVG();
-});
-
 function loop(){
   requestAnimationFrame(loop);
-  if(paused) return;
 
   windAngle += (Math.random()-0.5) * 0.035;
   const wm = cfg.wind;
@@ -395,14 +226,10 @@ function loop(){
   }
 
   ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = '#fff';
+  ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, W, H);
-  ctx.beginPath();
-  ctx.strokeStyle = 'rgba(0,0,0,0.88)';
-  ctx.lineWidth = 0.5;
-  ctx.lineCap = 'round';
-  for(const b of flock) b.draw(ctx, cfg.sz);
-  ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  for(const b of flock) b.draw(ctx);
 }
 loop();
 </script>
